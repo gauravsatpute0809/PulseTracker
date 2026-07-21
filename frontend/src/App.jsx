@@ -4,6 +4,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Products from "./pages/Products";
+import Customers from "./pages/Customers";
 
 
 function App() {
@@ -28,6 +29,10 @@ function App() {
         <Route 
         path="/products" 
         element={<Products />} />
+
+        <Route 
+        path="/customers" 
+        element={<Customers />} />
 
       </Routes>
     </BrowserRouter>
