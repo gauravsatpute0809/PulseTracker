@@ -6,7 +6,7 @@ import Analytics from "./pages/Analytics";
 import Products from "./pages/Products";
 import Customers from "./pages/Customers";
 import Orders from "./pages/Orders";
-
+import Reports from "./pages/Reports";
 
 
 function App() {
@@ -39,6 +39,10 @@ function App() {
         <Route 
         path="/orders" 
         element={<Orders />} />
+
+        <Route 
+        path="/reports" 
+        element={<Reports />} />
 
       </Routes>
     </BrowserRouter>
