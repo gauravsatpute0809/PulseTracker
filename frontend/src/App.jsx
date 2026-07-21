@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Products from "./pages/Products";
 import Customers from "./pages/Customers";
+import Orders from "./pages/Orders";
+
 
 
 function App() {
@@ -33,6 +35,10 @@ function App() {
         <Route 
         path="/customers" 
         element={<Customers />} />
+
+        <Route 
+        path="/orders" 
+        element={<Orders />} />
 
       </Routes>
     </BrowserRouter>
