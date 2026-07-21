@@ -30,7 +30,7 @@ const insights = [
 
 function AIInsights() {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 h-full">
+    <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl shadow-xl p-6">
       <h2 className="text-xl font-bold mb-6">
         AI Insights
       </h2>

@@ -22,8 +22,8 @@ const COLORS = [
 
 function SalesPieChart() {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 h-full">
-      <h2 className="text-xl font-bold mb-6">
+    <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition h-full">
+      <h2 className="text-2xl font-bold mb-6">
         Sales Distribution
       </h2>
 

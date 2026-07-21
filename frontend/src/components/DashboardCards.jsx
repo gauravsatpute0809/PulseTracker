@@ -8,27 +8,31 @@ import {
 const cards = [
   {
     title: "Revenue",
-    value: "$245,890",
+    value: "$248,560",
+    change: "+18.5%",
     icon: <FaDollarSign />,
-    color: "bg-green-500",
+    color: "bg-green-100 text-green-600",
   },
   {
     title: "Orders",
-    value: "1,248",
+    value: "3,254",
+    change: "+12.1%",
     icon: <FaShoppingCart />,
-    color: "bg-orange-500",
+    color: "bg-blue-100 text-blue-600",
   },
   {
     title: "Customers",
-    value: "8,542",
+    value: "1,842",
+    change: "+8.3%",
     icon: <FaUsers />,
-    color: "bg-blue-500",
+    color: "bg-orange-100 text-orange-600",
   },
   {
-    title: "Profit",
-    value: "28%",
+    title: "Growth",
+    value: "24.6%",
+    change: "+4.7%",
     icon: <FaChartLine />,
-    color: "bg-purple-500",
+    color: "bg-purple-100 text-purple-600",
   },
 ];
 
@@ -38,27 +42,27 @@ function DashboardCards() {
       {cards.map((card) => (
         <div
           key={card.title}
-          className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition"
+          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-6"
         >
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-500">{card.title}</p>
 
-              <h2 className="text-3xl font-bold mt-3">
+              <h2 className="text-3xl font-bold mt-2">
                 {card.value}
               </h2>
+
+              <span className="text-green-600 text-sm font-semibold">
+                {card.change} this month
+              </span>
             </div>
 
             <div
-              className={`${card.color} w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl`}
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl ${card.color}`}
             >
               {card.icon}
             </div>
           </div>
-
-          <p className="text-green-600 mt-5 text-sm">
-            ↑ 12% from last month
-          </p>
         </div>
       ))}
     </div>

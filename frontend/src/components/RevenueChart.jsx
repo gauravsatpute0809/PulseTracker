@@ -19,8 +19,8 @@ const data = [
 
 function RevenueChart() {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6">
-      <h2 className="text-xl font-bold mb-6">
+    <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+      <h2 className="text-2xl font-bold mb-6">
         Revenue Overview
       </h2>
 

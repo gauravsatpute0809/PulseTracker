@@ -9,51 +9,57 @@ import {
   FaUserCircle,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const menus = [
-  { icon: <FaChartPie />, title: "Dashboard", active: true },
-  { icon: <FaChartLine />, title: "Analytics" },
-  { icon: <FaBox />, title: "Products" },
-  { icon: <FaUsers />, title: "Customers" },
-  { icon: <FaShoppingCart />, title: "Orders" },
-  { icon: <FaFileAlt />, title: "Reports" },
-  { icon: <FaCog />, title: "Settings" },
-  { icon: <FaUserCircle />, title: "Profile" },
+  { icon: <FaChartPie />, title: "Dashboard", path: "/dashboard" },
+  { icon: <FaChartLine />, title: "Analytics", path: "/analytics" },
+  { icon: <FaBox />, title: "Products", path: "/products" },
+  { icon: <FaUsers />, title: "Customers", path: "/customers" },
+  { icon: <FaShoppingCart />, title: "Orders", path: "/orders" },
+  { icon: <FaFileAlt />, title: "Reports", path: "/reports" },
+  { icon: <FaCog />, title: "Settings", path: "/settings" },
+  { icon: <FaUserCircle />, title: "Profile", path: "/profile" },
 ];
 
 function Sidebar() {
   return (
-    <aside className="w-64 bg-[#0F172A] text-white min-h-screen flex flex-col border-r border-slate-800">
+    <aside className="w-72 bg-slate-900 text-white min-h-screen flex flex-col border-r border-slate-800">
 
       {/* Logo */}
       <div className="h-20 flex items-center justify-center border-b border-slate-800">
-        <h1 className="text-3xl font-extrabold">
+        <h1 className="text-3xl font-extrabold tracking-wide">
           <span className="text-orange-500">Pulse</span>
           <span className="text-white">Metrics</span>
         </h1>
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      {/* Navigation */}
+      <nav className="flex-1 px-5 py-6 space-y-2">
         {menus.map((menu) => (
-          <button
+          <NavLink
             key={menu.title}
-            className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${
-              menu.active
-                ? "bg-orange-500 shadow-lg"
-                : "hover:bg-slate-800"
-            }`}
+            to={menu.path}
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 ${
+                isActive
+                  ? "bg-orange-500 text-white shadow-lg"
+                  : "text-gray-300 hover:bg-slate-800 hover:text-white"
+              }`
+            }
           >
             <span className="text-lg">{menu.icon}</span>
-            <span>{menu.title}</span>
-          </button>
+            <span className="font-medium">{menu.title}</span>
+          </NavLink>
         ))}
       </nav>
 
-      {/* User */}
-      <div className="px-4 py-5 border-t border-slate-800">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-11 h-11 rounded-full bg-orange-500 flex items-center justify-center font-bold">
+      {/* User Section */}
+      <div className="border-t border-slate-800 p-5">
+
+        <div className="flex items-center gap-3 bg-slate-800 rounded-2xl p-4 mb-4">
+
+          <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center font-bold text-lg">
             G
           </div>
 
@@ -63,13 +69,16 @@ function Sidebar() {
               Administrator
             </p>
           </div>
+
         </div>
 
-        <button className="w-full bg-red-500 hover:bg-red-600 rounded-xl py-3 flex items-center justify-center gap-3 transition">
+        <button className="w-full bg-red-500 hover:bg-red-600 rounded-xl py-3 flex items-center justify-center gap-3 font-medium transition-all duration-300">
           <FaSignOutAlt />
           Logout
         </button>
+
       </div>
+
     </aside>
   );
 }
