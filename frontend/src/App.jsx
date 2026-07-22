@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import Contact from "./pages/Contact";
 
 
 function App() {
@@ -73,6 +74,10 @@ function App() {
         <Route 
         path="/profile" 
         element={<Profile />} />
+
+        <Route
+        path="/contact"
+        element={<Contact />} />
 
       </Routes>
     </BrowserRouter>
