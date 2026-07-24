@@ -9,7 +9,7 @@ import {
   FaUserCircle,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const menus = [
   { icon: <FaChartPie />, title: "Dashboard", path: "/dashboard" },
@@ -23,6 +23,17 @@ const menus = [
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/login");
+  };
+
   return (
     <aside className="w-72 bg-slate-900 text-white min-h-screen flex flex-col border-r border-slate-800">
 
@@ -60,19 +71,25 @@ function Sidebar() {
         <div className="flex items-center gap-3 bg-slate-800 rounded-2xl p-4 mb-4">
 
           <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center font-bold text-lg">
-            G
+            {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
           </div>
 
           <div>
-            <h3 className="font-semibold">Gaurav</h3>
+            <h3 className="font-semibold">
+              {user?.full_name || "User"}
+            </h3>
+
             <p className="text-xs text-gray-400">
-              Administrator
+              {user?.email || "user@example.com"}
             </p>
           </div>
 
         </div>
 
-        <button className="w-full bg-red-500 hover:bg-red-600 rounded-xl py-3 flex items-center justify-center gap-3 font-medium transition-all duration-300">
+        <button
+          onClick={handleLogout}
+          className="w-full bg-red-500 hover:bg-red-600 rounded-xl py-3 flex items-center justify-center gap-3 font-medium transition-all duration-300"
+        >
           <FaSignOutAlt />
           Logout
         </button>

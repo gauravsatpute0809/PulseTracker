@@ -15,69 +15,93 @@ import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route
-          path="/"
-          element={<LandingPage />}
-        />
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/contact" element={<Contact />} />
 
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/analytics"
-          element={<Analytics />}
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
         />
-        <Route 
-        path="/products" 
-        element={<Products />} />
-
-        <Route 
-        path="/customers" 
-        element={<Customers />} />
-
-        <Route 
-        path="/orders" 
-        element={<Orders />} />
-
-        <Route 
-        path="/reports" 
-        element={<Reports />} />
-
-        <Route 
-        path="/settings" 
-        element={<Settings />} />
-
-        <Route 
-        path="/login" 
-        element={<Login />} />
-
-        <Route 
-        path="/register" 
-        element={<Register />} />
-
-        <Route 
-        path="/forgot-password" 
-        element={<ForgotPassword />} />
-       
-        <Route 
-        path="/reset-password" 
-        element={<ResetPassword />} />
-
-        <Route 
-        path="/profile" 
-        element={<Profile />} />
 
         <Route
-        path="/contact"
-        element={<Contact />} />
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customers"
+          element={
+            <ProtectedRoute>
+              <Customers />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>
