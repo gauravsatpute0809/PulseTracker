@@ -6,7 +6,7 @@ from app.extensions import db, migrate, bcrypt, jwt
 from app.models.user import User
 from app.routes.auth import auth_bp
 from app.routes.profile import profile_bp
-
+from app.models.product import Product
 
 def create_app():
 
