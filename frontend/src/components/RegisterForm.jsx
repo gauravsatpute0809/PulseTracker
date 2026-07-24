@@ -1,37 +1,118 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 function RegisterForm() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setMessage("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await api.post("/auth/register", {
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setMessage(response.data.message);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
+    } catch (error) {
+      if (error.response) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Server connection failed.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
+
       <input
         type="text"
+        name="full_name"
         placeholder="Full Name"
+        value={formData.full_name}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
 
       <input
         type="email"
+        name="email"
         placeholder="Email Address"
+        value={formData.email}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
 
       <input
         type="password"
+        name="password"
         placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
 
       <input
         type="password"
+        name="confirmPassword"
         placeholder="Confirm Password"
+        value={formData.confirmPassword}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
+
+      {message && (
+        <div className="text-center text-sm text-red-500">
+          {message}
+        </div>
+      )}
 
       <button
         type="submit"
+        disabled={loading}
         className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition"
       >
-        Create Account
+        {loading ? "Creating Account..." : "Create Account"}
       </button>
 
       <div className="flex items-center gap-4">
@@ -63,6 +144,7 @@ function RegisterForm() {
           Sign In
         </Link>
       </p>
+
     </form>
   );
 }
