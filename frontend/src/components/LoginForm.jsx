@@ -1,23 +1,101 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 function LoginForm() {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setMessage("");
+
+    try {
+      setLoading(true);
+
+      const response = await api.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // Save JWT Token
+      localStorage.setItem("token", response.data.access_token);
+
+      // Save User Details
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
+      setMessage("Login successful!");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+
+    } catch (error) {
+
+      if (error.response) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Unable to connect to server.");
+      }
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
+
       <input
         type="email"
+        name="email"
         placeholder="Email Address"
+        value={formData.email}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
 
       <input
         type="password"
+        name="password"
         placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
         className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-orange-400 outline-none"
+        required
       />
 
       <div className="flex justify-between items-center text-sm">
+
         <label className="flex items-center gap-2">
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            name="remember"
+            checked={formData.remember}
+            onChange={handleChange}
+          />
           Remember me
         </label>
 
@@ -27,12 +105,21 @@ function LoginForm() {
         >
           Forgot Password?
         </Link>
+
       </div>
 
+      {message && (
+        <p className="text-center text-red-500 text-sm">
+          {message}
+        </p>
+      )}
+
       <button
+        type="submit"
+        disabled={loading}
         className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition"
       >
-        Sign In
+        {loading ? "Signing In..." : "Sign In"}
       </button>
 
       <div className="flex items-center gap-4">
@@ -64,6 +151,7 @@ function LoginForm() {
           Register
         </Link>
       </p>
+
     </form>
   );
 }
