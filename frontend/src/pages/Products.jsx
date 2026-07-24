@@ -1,9 +1,19 @@
+import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProductTable from "../components/ProductTable";
+import AddProductModal from "../components/AddProductModal";
 
 function Products() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
+  const refreshProducts = () => {
+    setRefresh(!refresh);
+  };
+
   return (
     <DashboardLayout>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -16,7 +26,10 @@ function Products() {
           </p>
         </div>
 
-        <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+        >
           + Add Product
         </button>
       </div>
@@ -44,7 +57,7 @@ function Products() {
         </div>
       </div>
 
-      {/* Product Summary */}
+      {/* Summary */}
       <div className="grid md:grid-cols-4 gap-6 mb-8">
 
         <div className="bg-white rounded-2xl shadow p-6">
@@ -70,7 +83,15 @@ function Products() {
       </div>
 
       {/* Product Table */}
-      <ProductTable />
+      <ProductTable refresh={refresh} />
+
+      {/* Modal */}
+      <AddProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onProductAdded={refreshProducts}
+      />
+
     </DashboardLayout>
   );
 }

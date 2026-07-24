@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-function ProductTable() {
+function ProductTable({ refresh }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
+
       const response = await api.get("/products");
 
       setProducts(response.data.products);
-
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -20,7 +21,7 @@ function ProductTable() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [refresh]);
 
   if (loading) {
     return (
@@ -32,9 +33,7 @@ function ProductTable() {
 
   return (
     <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
-
       <table className="w-full text-left">
-
         <thead>
           <tr className="border-b">
             <th className="py-3">Product</th>
@@ -46,9 +45,7 @@ function ProductTable() {
         </thead>
 
         <tbody>
-
           {products.length === 0 ? (
-
             <tr>
               <td
                 colSpan="5"
@@ -57,16 +54,12 @@ function ProductTable() {
                 No products found.
               </td>
             </tr>
-
           ) : (
-
             products.map((item) => (
-
               <tr
                 key={item.id}
                 className="border-b hover:bg-gray-50"
               >
-
                 <td className="py-4 font-semibold">
                   {item.name}
                 </td>
@@ -88,17 +81,11 @@ function ProductTable() {
                     {item.status}
                   </span>
                 </td>
-
               </tr>
-
             ))
-
           )}
-
         </tbody>
-
       </table>
-
     </div>
   );
 }
