@@ -1,50 +1,40 @@
+import { useEffect, useState } from "react";
+import api from "../services/api";
+
 function ProductTable() {
-  const products = [
-    {
-      id: 1,
-      name: "MacBook Pro",
-      category: "Laptop",
-      price: "$1,299",
-      stock: 24,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "iPhone 16",
-      category: "Mobile",
-      price: "$999",
-      stock: 12,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Mechanical Keyboard",
-      category: "Accessory",
-      price: "$120",
-      stock: 54,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Gaming Monitor",
-      category: "Display",
-      price: "$430",
-      stock: 0,
-      status: "Out of Stock",
-    },
-    {
-      id: 5,
-      name: "Wireless Mouse",
-      category: "Accessory",
-      price: "$55",
-      stock: 80,
-      status: "Active",
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await api.get("/products");
+
+      setProducts(response.data.products);
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow p-8 text-center">
+        Loading products...
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-2xl shadow p-6">
+    <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
+
       <table className="w-full text-left">
+
         <thead>
           <tr className="border-b">
             <th className="py-3">Product</th>
@@ -56,28 +46,59 @@ function ProductTable() {
         </thead>
 
         <tbody>
-          {products.map((item) => (
-            <tr key={item.id} className="border-b hover:bg-gray-50">
-              <td className="py-4 font-semibold">{item.name}</td>
-              <td>{item.category}</td>
-              <td>{item.price}</td>
-              <td>{item.stock}</td>
 
-              <td>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    item.status === "Active"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-600"
-                  }`}
-                >
-                  {item.status}
-                </span>
+          {products.length === 0 ? (
+
+            <tr>
+              <td
+                colSpan="5"
+                className="text-center py-8 text-gray-500"
+              >
+                No products found.
               </td>
             </tr>
-          ))}
+
+          ) : (
+
+            products.map((item) => (
+
+              <tr
+                key={item.id}
+                className="border-b hover:bg-gray-50"
+              >
+
+                <td className="py-4 font-semibold">
+                  {item.name}
+                </td>
+
+                <td>{item.category}</td>
+
+                <td>₹{item.price}</td>
+
+                <td>{item.stock}</td>
+
+                <td>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      item.status === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-600"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
+
+              </tr>
+
+            ))
+
+          )}
+
         </tbody>
+
       </table>
+
     </div>
   );
 }

@@ -31,7 +31,7 @@ function LoginForm() {
     try {
       setLoading(true);
 
-      const response = await api.post("/auth/login", {
+      const response = await api.post("/login", {
         email: formData.email,
         password: formData.password,
       });
