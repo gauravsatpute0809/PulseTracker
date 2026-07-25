@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProductTable from "../components/ProductTable";
 import AddProductModal from "../components/AddProductModal";
+import api from "../services/api";
 
 function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,8 +13,33 @@ function Products() {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
 
+  // Summary State
+  const [summary, setSummary] = useState({
+    total_products: 0,
+    categories: 0,
+    in_stock: 0,
+    out_of_stock: 0,
+  });
+
+  // Fetch Product Summary
+  const fetchSummary = async () => {
+    try {
+      const response = await api.get("/products/summary");
+      setSummary(response.data.summary);
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+    }
+  };
+
+  // Load Summary on Page Load
+  useEffect(() => {
+    fetchSummary();
+  }, []);
+
+  // Refresh Products & Summary
   const refreshProducts = () => {
-    setRefresh(!refresh);
+    setRefresh((prev) => !prev);
+    fetchSummary();
   };
 
   return (
@@ -83,22 +109,30 @@ function Products() {
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">Total Products</p>
-          <h2 className="text-3xl font-bold mt-2">--</h2>
+          <h2 className="text-3xl font-bold mt-2">
+            {summary.total_products}
+          </h2>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">Categories</p>
-          <h2 className="text-3xl font-bold mt-2">--</h2>
+          <h2 className="text-3xl font-bold mt-2">
+            {summary.categories}
+          </h2>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">In Stock</p>
-          <h2 className="text-3xl font-bold mt-2 text-green-600">--</h2>
+          <h2 className="text-3xl font-bold mt-2 text-green-600">
+            {summary.in_stock}
+          </h2>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">Out of Stock</p>
-          <h2 className="text-3xl font-bold mt-2 text-red-500">--</h2>
+          <h2 className="text-3xl font-bold mt-2 text-red-500">
+            {summary.out_of_stock}
+          </h2>
         </div>
 
       </div>
