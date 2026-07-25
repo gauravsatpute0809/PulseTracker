@@ -7,13 +7,17 @@ function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
+  // Filters
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
+
   const refreshProducts = () => {
     setRefresh(!refresh);
   };
 
   return (
     <DashboardLayout>
-
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -38,26 +42,43 @@ function Products() {
       <div className="bg-white rounded-2xl shadow p-5 mb-8">
         <div className="grid md:grid-cols-3 gap-4">
 
+          {/* Search */}
           <input
             type="text"
             placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
           />
 
-          <select className="border rounded-xl px-4 py-3 outline-none">
-            <option>All Categories</option>
+          {/* Category Filter */}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="">All Categories</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Accessory">Accessory</option>
+            <option value="Display">Display</option>
           </select>
 
-          <select className="border rounded-xl px-4 py-3 outline-none">
-            <option>All Status</option>
-            <option>Active</option>
-            <option>Out of Stock</option>
+          {/* Status Filter */}
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Out of Stock">Out of Stock</option>
           </select>
 
         </div>
       </div>
 
-      {/* Summary */}
+      {/* Summary Cards */}
       <div className="grid md:grid-cols-4 gap-6 mb-8">
 
         <div className="bg-white rounded-2xl shadow p-6">
@@ -83,15 +104,19 @@ function Products() {
       </div>
 
       {/* Product Table */}
-      <ProductTable refresh={refresh} />
+      <ProductTable
+        refresh={refresh}
+        search={search}
+        category={category}
+        status={status}
+      />
 
-      {/* Modal */}
+      {/* Add Product Modal */}
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onProductAdded={refreshProducts}
       />
-
     </DashboardLayout>
   );
 }

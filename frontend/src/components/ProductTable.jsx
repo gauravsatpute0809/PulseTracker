@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import EditProductModal from "./EditProductModal";
 
-function ProductTable({ refresh }) {
+function ProductTable({ refresh, search, category, status }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +16,6 @@ function ProductTable({ refresh }) {
       setLoading(true);
 
       const response = await api.get("/products");
-
       setProducts(response.data.products);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -52,10 +51,24 @@ function ProductTable({ refresh }) {
     } catch (error) {
       alert(
         error.response?.data?.message ||
-          "Unable to delete product."
+        "Unable to delete product."
       );
     }
   };
+
+  // Search + Category + Status Filter
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === "" || product.category === category;
+
+    const matchesStatus =
+      status === "" || product.status === status;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   if (loading) {
     return (
@@ -81,7 +94,7 @@ function ProductTable({ refresh }) {
           </thead>
 
           <tbody>
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <tr>
                 <td
                   colSpan="6"
@@ -91,7 +104,7 @@ function ProductTable({ refresh }) {
                 </td>
               </tr>
             ) : (
-              products.map((item) => (
+              filteredProducts.map((item) => (
                 <tr
                   key={item.id}
                   className="border-b hover:bg-gray-50"
