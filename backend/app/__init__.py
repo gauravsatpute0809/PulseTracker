@@ -19,7 +19,11 @@ def create_app():
 
     app.config.from_object(Config)
 
-    CORS(app)
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": "http://localhost:5173"}},
+        supports_credentials=True,
+    )
 
     # Initialize Extensions
     db.init_app(app)
@@ -36,7 +40,7 @@ def create_app():
     def home():
         return {
             "success": True,
-            "message": "PulseMetrics Backend Running 🚀"
+            "message": "PulseMetrics Backend Running 🚀",
         }
 
     return app

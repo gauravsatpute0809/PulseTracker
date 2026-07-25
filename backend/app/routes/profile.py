@@ -5,7 +5,7 @@ from app.models.user import User
 profile_bp = Blueprint(
     "profile",
     __name__,
-    url_prefix="/api/profile"
+    url_prefix="/profile"
 )
 
 

@@ -4,7 +4,7 @@ from app.services.auth_service import register_user, login_user
 auth_bp = Blueprint(
     "auth",
     __name__,
-    url_prefix="/api/auth"
+    url_prefix="/auth"
 )
 
 
