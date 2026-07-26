@@ -1,12 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import EditProductModal from "./EditProductModal";
 
-function ProductTable({ refresh, search, category, status }) {
+function ProductTable({
+  refresh,
+  search,
+  category,
+  status,
+  sort,
+}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit Modal State
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(1);
+
+  // Edit Modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -15,8 +27,13 @@ function ProductTable({ refresh, search, category, status }) {
     try {
       setLoading(true);
 
-      const response = await api.get("/products");
+      const response = await api.get(
+        `/products?page=${page}&per_page=${perPage}`
+      );
+
       setProducts(response.data.products);
+      setTotal(response.data.total);
+      setPages(response.data.pages);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -26,15 +43,20 @@ function ProductTable({ refresh, search, category, status }) {
 
   useEffect(() => {
     fetchProducts();
-  }, [refresh]);
+  }, [refresh, page]);
 
-  // Open Edit Modal
+  // Reset page whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, category, status, sort]);
+
+  // Edit
   const handleEdit = (product) => {
     setSelectedProduct(product);
     setIsEditOpen(true);
   };
 
-  // Delete Product
+  // Delete
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
@@ -51,24 +73,68 @@ function ProductTable({ refresh, search, category, status }) {
     } catch (error) {
       alert(
         error.response?.data?.message ||
-        "Unable to delete product."
+          "Unable to delete product."
       );
     }
   };
 
-  // Search + Category + Status Filter
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(search.toLowerCase());
+  // Filter + Sort
+  const filteredProducts = useMemo(() => {
+    let data = [...products];
 
-    const matchesCategory =
-      category === "" || product.category === category;
+    data = data.filter((product) => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    const matchesStatus =
-      status === "" || product.status === status;
+      const matchesCategory =
+        category === "" || product.category === category;
 
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+      const matchesStatus =
+        status === "" || product.status === status;
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesStatus
+      );
+    });
+
+    switch (sort) {
+      case "name_asc":
+        data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        break;
+
+      case "name_desc":
+        data.sort((a, b) =>
+          b.name.localeCompare(a.name)
+        );
+        break;
+
+      case "price_asc":
+        data.sort((a, b) => a.price - b.price);
+        break;
+
+      case "price_desc":
+        data.sort((a, b) => b.price - a.price);
+        break;
+
+      case "stock_asc":
+        data.sort((a, b) => a.stock - b.stock);
+        break;
+
+      case "stock_desc":
+        data.sort((a, b) => b.stock - a.stock);
+        break;
+
+      default:
+        break;
+    }
+
+    return data;
+  }, [products, search, category, status, sort]);
 
   if (loading) {
     return (
@@ -141,7 +207,9 @@ function ProductTable({ refresh, search, category, status }) {
                       </button>
 
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() =>
+                          handleDelete(item.id)
+                        }
                         className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
                       >
                         Delete
@@ -153,6 +221,55 @@ function ProductTable({ refresh, search, category, status }) {
             )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-gray-600">
+            Showing{" "}
+            {total === 0
+              ? 0
+              : (page - 1) * perPage + 1}
+            {" - "}
+            {Math.min(page * perPage, total)}
+            {" of "}
+            {total} products
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              disabled={page === 1}
+              onClick={() =>
+                setPage((prev) => prev - 1)
+              }
+              className={`px-4 py-2 rounded-lg ${
+                page === 1
+                  ? "bg-gray-200 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600 text-white"
+              }`}
+            >
+              Previous
+            </button>
+
+            <div className="px-4 py-2 border rounded-lg font-semibold">
+              {page} / {pages}
+            </div>
+
+            <button
+              disabled={page === pages || pages === 0}
+              onClick={() =>
+                setPage((prev) => prev + 1)
+              }
+              className={`px-4 py-2 rounded-lg ${
+                page === pages || pages === 0
+                  ? "bg-gray-200 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600 text-white"
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
 
       <EditProductModal

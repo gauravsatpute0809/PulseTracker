@@ -12,8 +12,9 @@ function Products() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("");
 
-  // Summary State
+  // Summary
   const [summary, setSummary] = useState({
     total_products: 0,
     categories: 0,
@@ -21,7 +22,7 @@ function Products() {
     out_of_stock: 0,
   });
 
-  // Fetch Product Summary
+  // Fetch Summary
   const fetchSummary = async () => {
     try {
       const response = await api.get("/products/summary");
@@ -31,7 +32,6 @@ function Products() {
     }
   };
 
-  // Load Summary on Page Load
   useEffect(() => {
     fetchSummary();
   }, []);
@@ -66,7 +66,7 @@ function Products() {
 
       {/* Search & Filters */}
       <div className="bg-white rounded-2xl shadow p-5 mb-8">
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-4 gap-4">
 
           {/* Search */}
           <input
@@ -77,7 +77,7 @@ function Products() {
             className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
           />
 
-          {/* Category Filter */}
+          {/* Category */}
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -90,7 +90,7 @@ function Products() {
             <option value="Display">Display</option>
           </select>
 
-          {/* Status Filter */}
+          {/* Status */}
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -99,6 +99,21 @@ function Products() {
             <option value="">All Status</option>
             <option value="Active">Active</option>
             <option value="Out of Stock">Out of Stock</option>
+          </select>
+
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="">Sort By</option>
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="name_desc">Name (Z-A)</option>
+            <option value="price_asc">Price (Low → High)</option>
+            <option value="price_desc">Price (High → Low)</option>
+            <option value="stock_asc">Stock (Low → High)</option>
+            <option value="stock_desc">Stock (High → Low)</option>
           </select>
 
         </div>
@@ -143,6 +158,7 @@ function Products() {
         search={search}
         category={category}
         status={status}
+        sort={sort}
       />
 
       {/* Add Product Modal */}
