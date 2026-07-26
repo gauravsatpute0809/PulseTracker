@@ -4,6 +4,10 @@ from sqlalchemy import func
 from app.extensions import db
 from app.models.product import Product
 
+from openpyxl import load_workbook
+from werkzeug.utils import secure_filename
+import os
+
 product_bp = Blueprint("product", __name__)
 
 
@@ -128,6 +132,68 @@ def delete_product(id):
         "success": True,
         "message": "Product deleted successfully."
     }), 200
+# ==========================================
+# Import Products from Excel
+# ==========================================
+@product_bp.route("/products/import", methods=["POST"])
+def import_products():
+
+    if "file" not in request.files:
+        return jsonify({
+            "success": False,
+            "message": "No file uploaded."
+        }), 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return jsonify({
+            "success": False,
+            "message": "Please select an Excel file."
+        }), 400
+
+    filename = secure_filename(file.filename)
+
+    upload_folder = "uploads"
+
+    os.makedirs(upload_folder, exist_ok=True)
+
+    filepath = os.path.join(upload_folder, filename)
+
+    file.save(filepath)
+
+    workbook = load_workbook(filepath)
+    sheet = workbook.active
+
+    imported = 0
+
+    # Skip Header Row
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+
+        if not row[0]:
+            continue
+
+        product = Product(
+            name=row[0],
+            category=row[1],
+            price=row[2],
+            stock=row[3],
+            status=row[4] if row[4] else "Active",
+            description=row[5]
+        )
+
+        db.session.add(product)
+        imported += 1
+
+    db.session.commit()
+
+    os.remove(filepath)
+
+    return jsonify({
+        "success": True,
+        "message": f"{imported} products imported successfully.",
+        "imported": imported
+    }), 201
 
 
 # ==========================================
