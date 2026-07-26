@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProductTable from "../components/ProductTable";
 import AddProductModal from "../components/AddProductModal";
+import ExportCSVButton from "../components/ExportCSVButton";
 import api from "../services/api";
 
 function Products() {
@@ -56,12 +57,16 @@ function Products() {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
-        >
-          + Add Product
-        </button>
+        <div className="flex items-center gap-3">
+          <ExportCSVButton />
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}
