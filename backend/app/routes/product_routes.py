@@ -51,17 +51,39 @@ def add_product():
 
 
 # ==========================================
-# Get Products (Pagination)
+# Get Products (Pagination + Sorting)
 # ==========================================
 @product_bp.route("/products", methods=["GET"])
 def get_products():
 
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=10, type=int)
+    sort = request.args.get("sort", "")
 
-    pagination = Product.query.order_by(
-        Product.id.desc()
-    ).paginate(
+    query = Product.query
+
+    if sort == "name_asc":
+        query = query.order_by(Product.name.asc())
+
+    elif sort == "name_desc":
+        query = query.order_by(Product.name.desc())
+
+    elif sort == "price_asc":
+        query = query.order_by(Product.price.asc())
+
+    elif sort == "price_desc":
+        query = query.order_by(Product.price.desc())
+
+    elif sort == "stock_asc":
+        query = query.order_by(Product.stock.asc())
+
+    elif sort == "stock_desc":
+        query = query.order_by(Product.stock.desc())
+
+    else:
+        query = query.order_by(Product.id.desc())
+
+    pagination = query.paginate(
         page=page,
         per_page=per_page,
         error_out=False
@@ -132,6 +154,35 @@ def delete_product(id):
         "success": True,
         "message": "Product deleted successfully."
     }), 200
+
+# ==========================================
+# Bulk Delete Products
+# ==========================================
+@product_bp.route("/products/bulk-delete", methods=["DELETE"])
+def bulk_delete_products():
+
+    data = request.get_json()
+
+    ids = data.get("ids", [])
+
+    if not ids:
+        return jsonify({
+            "success": False,
+            "message": "No products selected."
+        }), 400
+
+    Product.query.filter(
+        Product.id.in_(ids)
+    ).delete(synchronize_session=False)
+
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": f"{len(ids)} products deleted successfully."
+    }), 200
+
+
 # ==========================================
 # Import Products from Excel
 # ==========================================
@@ -155,11 +206,9 @@ def import_products():
     filename = secure_filename(file.filename)
 
     upload_folder = "uploads"
-
     os.makedirs(upload_folder, exist_ok=True)
 
     filepath = os.path.join(upload_folder, filename)
-
     file.save(filepath)
 
     workbook = load_workbook(filepath)

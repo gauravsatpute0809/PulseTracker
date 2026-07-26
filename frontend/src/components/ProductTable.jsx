@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import EditProductModal from "./EditProductModal";
 
@@ -11,6 +11,9 @@ function ProductTable({
 }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Selected Products
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -28,7 +31,7 @@ function ProductTable({
       setLoading(true);
 
       const response = await api.get(
-        `/products?page=${page}&per_page=${perPage}`
+        `/products?page=${page}&per_page=${perPage}&sort=${sort}`
       );
 
       setProducts(response.data.products);
@@ -43,9 +46,8 @@ function ProductTable({
 
   useEffect(() => {
     fetchProducts();
-  }, [refresh, page]);
+  }, [refresh, page, sort]);
 
-  // Reset page whenever filters change
   useEffect(() => {
     setPage(1);
   }, [search, category, status, sort]);
@@ -56,7 +58,7 @@ function ProductTable({
     setIsEditOpen(true);
   };
 
-  // Delete
+  // Delete Single Product
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
@@ -78,63 +80,96 @@ function ProductTable({
     }
   };
 
-  // Filter + Sort
-  const filteredProducts = useMemo(() => {
-    let data = [...products];
+  // Filters
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
 
-    data = data.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+    const matchesCategory =
+      category === "" ||
+      product.category === category;
 
-      const matchesCategory =
-        category === "" || product.category === category;
+    const matchesStatus =
+      status === "" ||
+      product.status === status;
 
-      const matchesStatus =
-        status === "" || product.status === status;
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesStatus
+    );
+  });
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesStatus
+  // Select One
+  const handleSelect = (id) => {
+    if (selectedProducts.includes(id)) {
+      setSelectedProducts(
+        selectedProducts.filter(
+          (item) => item !== id
+        )
       );
-    });
+    } else {
+      setSelectedProducts([
+        ...selectedProducts,
+        id,
+      ]);
+    }
+  };
 
-    switch (sort) {
-      case "name_asc":
-        data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        break;
+  // Select All
+  const handleSelectAll = () => {
+    if (
+      selectedProducts.length ===
+      filteredProducts.length
+    ) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(
+        filteredProducts.map(
+          (item) => item.id
+        )
+      );
+    }
+  };
 
-      case "name_desc":
-        data.sort((a, b) =>
-          b.name.localeCompare(a.name)
-        );
-        break;
-
-      case "price_asc":
-        data.sort((a, b) => a.price - b.price);
-        break;
-
-      case "price_desc":
-        data.sort((a, b) => b.price - a.price);
-        break;
-
-      case "stock_asc":
-        data.sort((a, b) => a.stock - b.stock);
-        break;
-
-      case "stock_desc":
-        data.sort((a, b) => b.stock - a.stock);
-        break;
-
-      default:
-        break;
+  // Bulk Delete
+  const handleBulkDelete = async () => {
+    if (selectedProducts.length === 0) {
+      alert("Please select products.");
+      return;
     }
 
-    return data;
-  }, [products, search, category, status, sort]);
+    const confirmDelete = window.confirm(
+      `Delete ${selectedProducts.length} selected products?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(
+        "/products/bulk-delete",
+        {
+          data: {
+            ids: selectedProducts,
+          },
+        }
+      );
+
+      alert(
+        "Products deleted successfully!"
+      );
+
+      setSelectedProducts([]);
+
+      fetchProducts();
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Bulk delete failed."
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -147,23 +182,48 @@ function ProductTable({
   return (
     <>
       <div className="bg-white rounded-2xl shadow p-6 overflow-x-auto">
+
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleBulkDelete}
+            className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg"
+          >
+            Delete Selected
+          </button>
+        </div>
+
         <table className="w-full text-left">
           <thead>
             <tr className="border-b">
-              <th className="py-3">Product</th>
+              <th className="py-3">
+                <input
+                  type="checkbox"
+                  checked={
+                    filteredProducts.length > 0 &&
+                    selectedProducts.length ===
+                      filteredProducts.length
+                  }
+                  onChange={handleSelectAll}
+                />
+              </th>
+
+              <th>Product</th>
               <th>Category</th>
               <th>Price</th>
               <th>Stock</th>
               <th>Status</th>
-              <th className="text-center">Actions</th>
+              <th className="text-center">
+                Actions
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredProducts.length === 0 ? (
+            {filteredProducts.length ===
+            0 ? (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   className="text-center py-8 text-gray-500"
                 >
                   No products found.
@@ -175,6 +235,18 @@ function ProductTable({
                   key={item.id}
                   className="border-b hover:bg-gray-50"
                 >
+                  <td className="py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(
+                        item.id
+                      )}
+                      onChange={() =>
+                        handleSelect(item.id)
+                      }
+                    />
+                  </td>
+
                   <td className="py-4 font-semibold">
                     {item.name}
                   </td>
@@ -188,7 +260,8 @@ function ProductTable({
                   <td>
                     <span
                       className={`px-3 py-1 rounded-full text-sm ${
-                        item.status === "Active"
+                        item.status ===
+                        "Active"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-600"
                       }`}
@@ -199,8 +272,11 @@ function ProductTable({
 
                   <td className="text-center">
                     <div className="flex justify-center gap-2">
+
                       <button
-                        onClick={() => handleEdit(item)}
+                        onClick={() =>
+                          handleEdit(item)
+                        }
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
                       >
                         Edit
@@ -214,6 +290,7 @@ function ProductTable({
                       >
                         Delete
                       </button>
+
                     </div>
                   </td>
                 </tr>
@@ -223,7 +300,6 @@ function ProductTable({
         </table>
 
         {/* Pagination */}
-
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-600">
             Showing{" "}
@@ -231,12 +307,16 @@ function ProductTable({
               ? 0
               : (page - 1) * perPage + 1}
             {" - "}
-            {Math.min(page * perPage, total)}
+            {Math.min(
+              page * perPage,
+              total
+            )}
             {" of "}
             {total} products
           </p>
 
           <div className="flex items-center gap-2">
+
             <button
               disabled={page === 1}
               onClick={() =>
@@ -256,18 +336,23 @@ function ProductTable({
             </div>
 
             <button
-              disabled={page === pages || pages === 0}
+              disabled={
+                page === pages ||
+                pages === 0
+              }
               onClick={() =>
                 setPage((prev) => prev + 1)
               }
               className={`px-4 py-2 rounded-lg ${
-                page === pages || pages === 0
+                page === pages ||
+                pages === 0
                   ? "bg-gray-200 cursor-not-allowed"
                   : "bg-orange-500 hover:bg-orange-600 text-white"
               }`}
             >
               Next
             </button>
+
           </div>
         </div>
       </div>
