@@ -4,6 +4,8 @@ import ProductTable from "../components/ProductTable";
 import AddProductModal from "../components/AddProductModal";
 import ExportCSVButton from "../components/ExportCSVButton";
 import api from "../services/api";
+import ExportExcelButton from "../components/ExportExcelButton";
+
 
 function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,15 +60,17 @@ function Products() {
         </div>
 
         <div className="flex items-center gap-3">
-          <ExportCSVButton />
+  <ExportCSVButton />
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
-          >
-            + Add Product
-          </button>
-        </div>
+  <ExportExcelButton />
+
+  <button
+    onClick={() => setIsModalOpen(true)}
+    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+  >
+    + Add Product
+  </button>
+</div>
       </div>
 
       {/* Search & Filters */}
