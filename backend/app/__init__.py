@@ -12,7 +12,7 @@ from app.models.product import Product
 from app.routes.auth import auth_bp
 from app.routes.profile import profile_bp
 from app.routes.product_routes import product_bp
-
+from app.routes.customer_routes import customer_bp
 
 def create_app():
     app = Flask(__name__)
@@ -35,7 +35,8 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix="/api")
     app.register_blueprint(profile_bp, url_prefix="/api")
     app.register_blueprint(product_bp, url_prefix="/api")
-
+    app.register_blueprint(customer_bp, url_prefix="/api")
+    
     @app.route("/")
     def home():
         return {
