@@ -103,6 +103,8 @@ function App() {
           }
         />
 
+        <Route path="/customers" element={<Customers />} />
+
       </Routes>
     </BrowserRouter>
   );
