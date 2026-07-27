@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
+
 from app.extensions import db
 from app.models.customer import Customer
-from sqlalchemy import func
 
 customer_bp = Blueprint("customer", __name__)
 
@@ -50,19 +51,42 @@ def add_customer():
         "message": "Customer added successfully.",
         "customer": customer.to_dict()
     }), 201
-    
+
+
 # ==========================================
-# Get Customers (Pagination)
+# Get Customers (Pagination + Sorting)
 # ==========================================
 @customer_bp.route("/customers", methods=["GET"])
 def get_customers():
 
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=10, type=int)
+    sort = request.args.get("sort", "")
 
-    pagination = Customer.query.order_by(
-        Customer.id.desc()
-    ).paginate(
+    query = Customer.query
+
+    if sort == "name_asc":
+        query = query.order_by(Customer.full_name.asc())
+
+    elif sort == "name_desc":
+        query = query.order_by(Customer.full_name.desc())
+
+    elif sort == "city_asc":
+        query = query.order_by(Customer.city.asc())
+
+    elif sort == "city_desc":
+        query = query.order_by(Customer.city.desc())
+
+    elif sort == "status_asc":
+        query = query.order_by(Customer.status.asc())
+
+    elif sort == "status_desc":
+        query = query.order_by(Customer.status.desc())
+
+    else:
+        query = query.order_by(Customer.id.desc())
+
+    pagination = query.paginate(
         page=page,
         per_page=per_page,
         error_out=False
@@ -81,7 +105,8 @@ def get_customers():
         "has_next": pagination.has_next,
         "has_prev": pagination.has_prev
     }), 200
-    
+
+
 # ==========================================
 # Update Customer
 # ==========================================
@@ -111,7 +136,8 @@ def update_customer(id):
         "message": "Customer updated successfully.",
         "customer": customer.to_dict()
     }), 200
-    
+
+
 # ==========================================
 # Delete Customer
 # ==========================================
@@ -133,7 +159,8 @@ def delete_customer(id):
         "success": True,
         "message": "Customer deleted successfully."
     }), 200
-    
+
+
 # ==========================================
 # Customer Summary API
 # ==========================================

@@ -11,14 +11,17 @@ function Customers() {
   // Filters
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("");
 
   // Summary
   const [summary, setSummary] = useState({
     total_customers: 0,
     active_customers: 0,
     inactive_customers: 0,
+    cities: 0,
   });
 
+  // Fetch Summary
   const fetchSummary = async () => {
     try {
       const response = await api.get("/customers/summary");
@@ -32,6 +35,7 @@ function Customers() {
     fetchSummary();
   }, []);
 
+  // Refresh Customers
   const refreshCustomers = () => {
     setRefresh((prev) => !prev);
     fetchSummary();
@@ -59,10 +63,11 @@ function Customers() {
         </button>
       </div>
 
-      {/* Filters */}
+      {/* Search & Filters */}
       <div className="bg-white rounded-2xl shadow p-5 mb-8">
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
 
+          {/* Search */}
           <input
             type="text"
             placeholder="Search customer..."
@@ -71,6 +76,7 @@ function Customers() {
             className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
           />
 
+          {/* Status */}
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -81,11 +87,24 @@ function Customers() {
             <option value="Inactive">Inactive</option>
           </select>
 
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="">Sort By</option>
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="name_desc">Name (Z-A)</option>
+            <option value="city_asc">City (A-Z)</option>
+            <option value="city_desc">City (Z-A)</option>
+          </select>
+
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">
@@ -114,16 +133,26 @@ function Customers() {
           </h2>
         </div>
 
+        <div className="bg-white rounded-2xl shadow p-6">
+          <p className="text-gray-500">
+            Cities
+          </p>
+          <h2 className="text-3xl font-bold mt-2 text-blue-600">
+            {summary.cities}
+          </h2>
+        </div>
+
       </div>
 
-      {/* Table */}
+      {/* Customer Table */}
       <CustomerTable
         refresh={refresh}
         search={search}
         status={status}
+        sort={sort}
       />
 
-      {/* Add Modal */}
+      {/* Add Customer Modal */}
       <AddCustomerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

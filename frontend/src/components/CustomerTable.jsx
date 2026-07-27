@@ -6,6 +6,7 @@ function CustomerTable({
   refresh,
   search,
   status,
+  sort,
 }) {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,7 @@ function CustomerTable({
       setLoading(true);
 
       const response = await api.get(
-        `/customers?page=${page}&per_page=${perPage}`
+        `/customers?page=${page}&per_page=${perPage}&sort=${sort}`
       );
 
       setCustomers(response.data.customers);
@@ -41,12 +42,12 @@ function CustomerTable({
 
   useEffect(() => {
     fetchCustomers();
-  }, [refresh, page]);
+  }, [refresh, page, sort]);
 
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, status]);
+  }, [search, status, sort]);
 
   // Edit Customer
   const handleEdit = (customer) => {
@@ -76,7 +77,7 @@ function CustomerTable({
     }
   };
 
-  // Search + Status Filter
+  // Frontend Search + Status Filter
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
       (customer.full_name || "")
