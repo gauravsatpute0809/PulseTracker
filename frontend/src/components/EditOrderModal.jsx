@@ -129,6 +129,9 @@ function EditOrderModal({
             <option value="Cancelled">
               Cancelled
             </option>
+            <option value="Cancelled">
+              Cancelled
+              </option>
           </select>
 
           <input

@@ -14,12 +14,12 @@ function Orders() {
 
   // Summary
   const [summary, setSummary] = useState({
-    total_orders: 0,
-    completed_orders: 0,
-    pending_orders: 0,
-    total_sales: 0,
-  });
-
+  total_orders: 0,
+  completed_orders: 0,
+  pending_orders: 0,
+  cancelled_orders: 0,
+  total_sales: 0,
+});
   // Fetch Summary
   const fetchSummary = async () => {
     try {
@@ -32,12 +32,11 @@ function Orders() {
 
   useEffect(() => {
     fetchSummary();
-  }, []);
+  }, [refresh]);
 
   // Refresh Orders & Summary
   const refreshOrders = () => {
     setRefresh((prev) => !prev);
-    fetchSummary();
   };
 
   return (
@@ -68,7 +67,7 @@ function Orders() {
 
           <input
             type="text"
-            placeholder="Search orders..."
+            placeholder="Search customer or product..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-orange-400"
@@ -82,13 +81,14 @@ function Orders() {
             <option value="">All Status</option>
             <option value="Pending">Pending</option>
             <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
 
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
+      <div className="grid md:grid-cols-5 gap-6 mb-8">
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">Total Orders</p>
@@ -98,18 +98,25 @@ function Orders() {
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
-          <p className="text-gray-500">Completed</p>
+          <p className="text-gray-500">Completed Orders</p>
           <h2 className="text-3xl font-bold mt-2 text-green-600">
             {summary.completed_orders}
           </h2>
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
-          <p className="text-gray-500">Pending</p>
+          <p className="text-gray-500">Pending Orders</p>
           <h2 className="text-3xl font-bold mt-2 text-orange-500">
             {summary.pending_orders}
           </h2>
         </div>
+
+        <div className="bg-white rounded-2xl shadow p-6">
+  <p className="text-gray-500">Cancelled</p>
+  <h2 className="text-3xl font-bold mt-2 text-red-600">
+    {summary.cancelled_orders}
+  </h2>
+</div>
 
         <div className="bg-white rounded-2xl shadow p-6">
           <p className="text-gray-500">Total Sales</p>
@@ -120,7 +127,7 @@ function Orders() {
 
       </div>
 
-      {/* Order Table */}
+      {/* Orders Table */}
       <OrderTable
         refresh={refresh}
         search={search}
@@ -133,6 +140,7 @@ function Orders() {
         onClose={() => setIsModalOpen(false)}
         onOrderAdded={refreshOrders}
       />
+
     </DashboardLayout>
   );
 }

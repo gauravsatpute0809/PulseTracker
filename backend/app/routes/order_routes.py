@@ -154,17 +154,21 @@ def order_summary():
     pending_orders = Order.query.filter(
         Order.status == "Pending"
     ).count()
+    cancelled_orders = Order.query.filter(
+    Order.status == "Cancelled"
+    ).count()
 
     total_sales = db.session.query(
         func.coalesce(func.sum(Order.total_price), 0)
     ).scalar()
 
     return jsonify({
-        "success": True,
-        "summary": {
-            "total_orders": total_orders,
-            "completed_orders": completed_orders,
-            "pending_orders": pending_orders,
-            "total_sales": total_sales
-        }
-    }), 200
+    "success": True,
+    "summary": {
+        "total_orders": total_orders,
+        "completed_orders": completed_orders,
+        "pending_orders": pending_orders,
+        "cancelled_orders": cancelled_orders,
+        "total_sales": total_sales
+    }
+}), 200

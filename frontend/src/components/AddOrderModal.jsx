@@ -122,6 +122,7 @@ function AddOrderModal({
           >
             <option>Pending</option>
             <option>Completed</option>
+            <option>Cancelled</option>
           </select>
 
           <input
