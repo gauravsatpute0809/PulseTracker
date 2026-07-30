@@ -14,6 +14,7 @@ from app.routes.profile import profile_bp
 from app.routes.product_routes import product_bp
 from app.routes.customer_routes import customer_bp
 from app.routes.order_routes import order_bp
+from app.routes.report_routes import report_bp
 
 
 def create_app():
@@ -39,11 +40,18 @@ def create_app():
     app.register_blueprint(product_bp, url_prefix="/api")
     app.register_blueprint(customer_bp, url_prefix="/api")
     app.register_blueprint(order_bp, url_prefix="/api")
+    app.register_blueprint(report_bp, url_prefix="/api")
+
     @app.route("/")
     def home():
         return {
             "success": True,
             "message": "PulseMetrics Backend Running 🚀",
         }
+
+    print("\n========== REGISTERED ROUTES ==========")
+    for rule in app.url_map.iter_rules():
+        print(rule)
+    print("=======================================\n")
 
     return app
