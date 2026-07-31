@@ -18,14 +18,22 @@ function Reports() {
   // ==========================
   // Fetch Summary
   // ==========================
-  const fetchSummary = async () => {
-    try {
-      const response = await api.get("/reports/summary");
-      setSummary(response.data.summary);
-    } catch (error) {
-      console.error("Error fetching reports summary:", error);
-    }
-  };
+const fetchSummary = async () => {
+  try {
+
+    const response = await api.get("/reports/dashboard-summary");
+
+    setSummary({
+      total_sales: response.data.data.revenue,
+      total_orders: response.data.data.orders,
+      total_products: response.data.data.products,
+      total_customers: response.data.data.customers,
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   // ==========================
   // Export Excel

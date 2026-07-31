@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, send_file
-from sqlalchemy import func
+from sqlalchemy import func, extract
 import io
 import pandas as pd
 
@@ -41,43 +41,33 @@ def reports_summary():
 @report_bp.route("/reports/monthly-sales", methods=["GET"])
 def monthly_sales():
 
-    monthly = (
+    sales = (
         db.session.query(
-            func.extract("month", Order.order_date).label("month"),
-            func.coalesce(func.sum(Order.total_price), 0).label("sales")
+            extract("month", Order.order_date).label("month"),
+            func.sum(Order.total_price).label("revenue")
         )
-        .group_by(func.extract("month", Order.order_date))
-        .order_by(func.extract("month", Order.order_date))
+        .group_by(extract("month", Order.order_date))
+        .order_by(extract("month", Order.order_date))
         .all()
     )
 
-    month_names = {
-        1: "Jan",
-        2: "Feb",
-        3: "Mar",
-        4: "Apr",
-        5: "May",
-        6: "Jun",
-        7: "Jul",
-        8: "Aug",
-        9: "Sep",
-        10: "Oct",
-        11: "Nov",
-        12: "Dec",
-    }
+    months = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ]
 
-    data = []
+    result = []
 
-    for item in monthly:
-        data.append({
-            "month": month_names.get(int(item.month), "Unknown"),
-            "sales": float(item.sales)
+    for item in sales:
+        result.append({
+            "month": months[int(item.month) - 1],
+            "revenue": float(item.revenue)
         })
 
-    return jsonify({
+    return {
         "success": True,
-        "data": data
-    }), 200
+        "data": result
+    }, 200
 
 
 # ==========================================
@@ -97,18 +87,18 @@ def top_products():
         .all()
     )
 
-    data = []
+    result = []
 
-    for item in products:
-        data.append({
-            "product": item.product_name,
-            "quantity": int(item.quantity)
+    for product in products:
+        result.append({
+            "name": product.product_name,
+            "value": int(product.quantity)
         })
 
-    return jsonify({
+    return {
         "success": True,
-        "data": data
-    }), 200
+        "data": result
+    }, 200
 
 
 # ==========================================
@@ -120,17 +110,14 @@ def recent_orders():
     orders = (
         Order.query
         .order_by(Order.id.desc())
-        .limit(10)
+        .limit(5)
         .all()
     )
 
-    return jsonify({
+    return {
         "success": True,
-        "data": [
-            order.to_dict()
-            for order in orders
-        ]
-    }), 200
+        "data": [order.to_dict() for order in orders]
+    }, 200
 
 
 # ==========================================
@@ -261,3 +248,26 @@ def export_excel():
         as_attachment=True,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    
+@report_bp.route("/reports/dashboard-summary", methods=["GET"])
+def dashboard_summary():
+
+    total_revenue = (
+        db.session.query(func.sum(Order.total_price)).scalar() or 0
+    )
+
+    total_orders = Order.query.count()
+
+    total_products = Product.query.count()
+
+    total_customers = Customer.query.count()
+
+    return {
+        "success": True,
+        "data": {
+            "revenue": total_revenue,
+            "orders": total_orders,
+            "products": total_products,
+            "customers": total_customers,
+        },
+    }, 200

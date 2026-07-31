@@ -1,14 +1,17 @@
 import DashboardLayout from "../layouts/DashboardLayout";
+
 import DashboardCards from "../components/DashboardCards";
 import RevenueChart from "../components/RevenueChart";
 import SalesPieChart from "../components/SalesPieChart";
 import RecentOrders from "../components/RecentOrders";
+import CustomerStatisticsCard from "../components/CustomerStatisticsCard";
 import AIInsights from "../components/AIInsights";
 
 function Dashboard() {
   return (
     <DashboardLayout>
-      {/* Page Heading */}
+
+      {/* Header */}
       <h1 className="text-4xl font-bold text-gray-900">
         Dashboard
       </h1>
@@ -20,29 +23,37 @@ function Dashboard() {
       {/* KPI Cards */}
       <DashboardCards />
 
-      {/* Charts Section */}
+      {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
-        {/* Revenue Chart */}
+
         <div className="xl:col-span-2">
           <RevenueChart />
         </div>
 
-        {/* Sales Pie Chart */}
         <div>
           <SalesPieChart />
         </div>
+
       </div>
 
-      {/* Recent Orders & AI Insights */}
+      {/* Recent Orders + Customer Statistics */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
+
         <div className="xl:col-span-2">
           <RecentOrders />
         </div>
 
         <div>
-          <AIInsights />
+          <CustomerStatisticsCard />
         </div>
+
       </div>
+
+      {/* AI Insights */}
+      <div className="mt-8">
+        <AIInsights />
+      </div>
+
     </DashboardLayout>
   );
 }

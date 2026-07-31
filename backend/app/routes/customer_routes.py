@@ -190,3 +190,21 @@ def customer_summary():
             "cities": cities
         }
     }), 200
+    
+@customer_bp.route("/customers/statistics", methods=["GET"])
+def customer_statistics():
+
+    total = Customer.query.count()
+
+    active = Customer.query.filter_by(status="Active").count()
+
+    inactive = Customer.query.filter_by(status="Inactive").count()
+
+    return {
+        "success": True,
+        "data": {
+            "total": total,
+            "active": active,
+            "inactive": inactive
+        }
+    }, 200

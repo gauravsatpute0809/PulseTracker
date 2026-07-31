@@ -2,41 +2,76 @@ import {
   FaDollarSign,
   FaShoppingCart,
   FaUsers,
-  FaChartLine,
+  FaBox,
 } from "react-icons/fa";
 
-const cards = [
-  {
-    title: "Revenue",
-    value: "$248,560",
-    change: "+18.5%",
-    icon: <FaDollarSign />,
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    title: "Orders",
-    value: "3,254",
-    change: "+12.1%",
-    icon: <FaShoppingCart />,
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    title: "Customers",
-    value: "1,842",
-    change: "+8.3%",
-    icon: <FaUsers />,
-    color: "bg-orange-100 text-orange-600",
-  },
-  {
-    title: "Growth",
-    value: "24.6%",
-    change: "+4.7%",
-    icon: <FaChartLine />,
-    color: "bg-purple-100 text-purple-600",
-  },
-];
+import useDashboardSummary from "../hooks/useDashboardSummary";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function DashboardCards() {
+  const { summary, loading } = useDashboardSummary();
+
+  const cards = [
+    {
+      title: "Revenue",
+      value: `₹${Number(summary.revenue).toLocaleString()}`,
+      change: "Live Data",
+      icon: <FaDollarSign />,
+      color: "bg-green-100 text-green-600",
+    },
+    {
+      title: "Orders",
+      value: summary.orders,
+      change: "Live Data",
+      icon: <FaShoppingCart />,
+      color: "bg-blue-100 text-blue-600",
+    },
+    {
+      title: "Customers",
+      value: summary.customers,
+      change: "Live Data",
+      icon: <FaUsers />,
+      color: "bg-orange-100 text-orange-600",
+    },
+    {
+      title: "Products",
+      value: summary.products,
+      change: "Live Data",
+      icon: <FaBox />,
+      color: "bg-purple-100 text-purple-600",
+    },
+  ];
+
+  if (loading) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+
+      {[1, 2, 3, 4].map((item) => (
+        <div
+          key={item}
+          className="bg-white rounded-2xl shadow-md p-6"
+        >
+          <Skeleton height={20} width={120} />
+
+          <Skeleton
+            height={35}
+            width={100}
+            className="mt-4"
+          />
+
+          <Skeleton
+            height={15}
+            width={140}
+            className="mt-4"
+          />
+        </div>
+      ))}
+
+    </div>
+  );
+}
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
       {cards.map((card) => (
@@ -53,7 +88,7 @@ function DashboardCards() {
               </h2>
 
               <span className="text-green-600 text-sm font-semibold">
-                {card.change} this month
+                {card.change}
               </span>
             </div>
 

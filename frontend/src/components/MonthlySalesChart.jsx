@@ -42,16 +42,13 @@ function MonthlySalesChart() {
       );
 
       const values = response.data.data.map(
-        (item) => item.sales
+        (item) => item.revenue
       );
 
       setLabels(months);
       setSales(values);
     } catch (error) {
-      console.error(
-        "Error fetching monthly sales:",
-        error
-      );
+      console.error("Error fetching monthly sales:", error);
     }
   };
 
@@ -65,12 +62,15 @@ function MonthlySalesChart() {
         backgroundColor: "rgba(249,115,22,0.15)",
         fill: true,
         tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: "#f97316",
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
@@ -79,7 +79,7 @@ function MonthlySalesChart() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow p-6 mt-8">
+    <div className="bg-white rounded-2xl shadow-md p-6 h-[420px]">
       <h2 className="text-2xl font-bold mb-6">
         Monthly Sales
       </h2>

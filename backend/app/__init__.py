@@ -18,6 +18,7 @@ from app.routes.customer_routes import customer_bp
 from app.routes.order_routes import order_bp
 from app.routes.report_routes import report_bp
 from app.routes.settings_routes import settings_bp
+from app.routes.dashboard_routes import dashboard_bp
 
 def create_app():
     app = Flask(__name__)
@@ -44,7 +45,7 @@ def create_app():
     app.register_blueprint(order_bp, url_prefix="/api")
     app.register_blueprint(report_bp, url_prefix="/api")
     app.register_blueprint(settings_bp, url_prefix="/api")
-    
+    app.register_blueprint(dashboard_bp, url_prefix="/api")
     @app.route("/")
     def home():
         return {
