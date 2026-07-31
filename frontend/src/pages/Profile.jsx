@@ -1,5 +1,6 @@
 import DashboardLayout from "../layouts/DashboardLayout";
 import ChangePasswordCard from "../components/ChangePasswordCard";
+import ProfileImageUpload from "../components/ProfileImageUpload";
 
 function Profile() {
   return (
@@ -22,9 +23,7 @@ function Profile() {
         {/* Left Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
 
-          <div className="w-28 h-28 rounded-full bg-orange-500 mx-auto flex items-center justify-center text-4xl font-bold text-white">
-            G
-          </div>
+          <ProfileImageUpload />
 
           <h2 className="text-2xl font-bold mt-5">
             Gaurav Satpute

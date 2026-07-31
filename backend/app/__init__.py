@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from flask import send_from_directory
 
 from app.config import Config
 from app.extensions import db, migrate, bcrypt, jwt
@@ -50,6 +51,13 @@ def create_app():
             "success": True,
             "message": "PulseMetrics Backend Running 🚀",
         }
+    @app.route("/uploads/<filename>")
+    def uploaded_file(filename):
+        return send_from_directory(
+            
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
 
     print("\n========== REGISTERED ROUTES ==========")
     for rule in app.url_map.iter_rules():
