@@ -100,12 +100,27 @@ def change_password():
     current_password = data.get("current_password")
     new_password = data.get("new_password")
 
+    if not current_password or not new_password:
+        return {
+            "success": False,
+            "message": "Both passwords are required."
+        }, 400
+
+    # Verify current password
     if not bcrypt.check_password_hash(user.password, current_password):
         return {
             "success": False,
             "message": "Current password is incorrect."
         }, 400
 
+    # Prevent same password
+    if bcrypt.check_password_hash(user.password, new_password):
+        return {
+            "success": False,
+            "message": "New password must be different from current password."
+        }, 400
+
+    # Update password
     user.password = bcrypt.generate_password_hash(
         new_password
     ).decode("utf-8")

@@ -1,8 +1,11 @@
 import DashboardLayout from "../layouts/DashboardLayout";
+import ChangePasswordCard from "../components/ChangePasswordCard";
 
 function Profile() {
   return (
     <DashboardLayout>
+
+      {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900">
           My Profile
@@ -13,6 +16,7 @@ function Profile() {
         </p>
       </div>
 
+      {/* Top Section */}
       <div className="grid lg:grid-cols-3 gap-8">
 
         {/* Left Card */}
@@ -36,7 +40,7 @@ function Profile() {
 
         </div>
 
-        {/* Right Section */}
+        {/* Profile Information */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
 
           <h2 className="text-2xl font-bold mb-6">
@@ -72,7 +76,7 @@ function Profile() {
           </div>
 
           <button
-            className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl"
+            className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl transition"
           >
             Edit Profile
           </button>
@@ -80,6 +84,10 @@ function Profile() {
         </div>
 
       </div>
+
+      {/* Change Password Section */}
+      <ChangePasswordCard />
+
     </DashboardLayout>
   );
 }
