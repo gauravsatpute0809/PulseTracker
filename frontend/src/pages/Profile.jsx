@@ -1,36 +1,63 @@
+import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
-import ProfileHeader from "../components/ProfileHeader";
+
 import ProfileCard from "../components/ProfileCard";
-import PersonalInfo from "../components/PersonalInfo";
-import ProfessionalInfo from "../components/ProfessionalInfo";
-import AccountStats from "../components/AccountStats";
-import ActivityTimeline from "../components/ActivityTimeline";
+import AccountInfo from "../components/AccountInfo";
+import ChangePassword from "../components/ChangePassword";
+import SaveProfileButton from "../components/SaveProfileButton";
 
 function Profile() {
+  const [profile, setProfile] = useState({
+    name: "Admin User",
+    email: "admin@pulsemetrics.com",
+    username: "admin",
+    role: "Administrator",
+    phone: "+91 9876543210",
+    country: "India",
+  });
+
+  const handleSave = () => {
+    alert("Profile updated successfully!");
+  };
+
   return (
     <DashboardLayout>
-      <ProfileHeader />
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900">
+          My Profile
+        </h1>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-
-        <div>
-          <ProfileCard />
-        </div>
-
-        <div className="xl:col-span-2 space-y-8">
-          <PersonalInfo />
-          <ProfessionalInfo />
-        </div>
-
+        <p className="text-gray-500 mt-2">
+          Manage your personal profile and account settings.
+        </p>
       </div>
 
-      <div className="mt-8">
-        <AccountStats />
+      {/* Profile Card */}
+      <div className="mb-8">
+        <ProfileCard
+          profile={profile}
+          setProfile={setProfile}
+        />
       </div>
 
-      <div className="mt-8">
-        <ActivityTimeline />
+      {/* Account Information */}
+      <div className="mb-8">
+        <AccountInfo
+          profile={profile}
+          setProfile={setProfile}
+        />
       </div>
+
+      {/* Change Password */}
+      <div className="mb-8">
+        <ChangePassword />
+      </div>
+
+      {/* Save Button */}
+      <SaveProfileButton
+        onSave={handleSave}
+      />
     </DashboardLayout>
   );
 }

@@ -36,8 +36,8 @@ def create_app():
     jwt.init_app(app)
 
     # Register Blueprints
-    app.register_blueprint(auth_bp, url_prefix="/api")
-    app.register_blueprint(profile_bp, url_prefix="/api")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(profile_bp, url_prefix="/api/profile")
     app.register_blueprint(product_bp, url_prefix="/api")
     app.register_blueprint(customer_bp, url_prefix="/api")
     app.register_blueprint(order_bp, url_prefix="/api")
@@ -53,7 +53,7 @@ def create_app():
 
     print("\n========== REGISTERED ROUTES ==========")
     for rule in app.url_map.iter_rules():
-        print(rule)
-    print("=======================================\n")
+     print(f"{rule.endpoint:30} -> {rule}")
+     print("=======================================\n")
 
     return app
