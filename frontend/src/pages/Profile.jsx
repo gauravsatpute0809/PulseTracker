@@ -1,63 +1,85 @@
-import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-import ProfileCard from "../components/ProfileCard";
-import AccountInfo from "../components/AccountInfo";
-import ChangePassword from "../components/ChangePassword";
-import SaveProfileButton from "../components/SaveProfileButton";
-
 function Profile() {
-  const [profile, setProfile] = useState({
-    name: "Admin User",
-    email: "admin@pulsemetrics.com",
-    username: "admin",
-    role: "Administrator",
-    phone: "+91 9876543210",
-    country: "India",
-  });
-
-  const handleSave = () => {
-    alert("Profile updated successfully!");
-  };
-
   return (
     <DashboardLayout>
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900">
           My Profile
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Manage your personal profile and account settings.
+          Manage your account information and security.
         </p>
       </div>
 
-      {/* Profile Card */}
-      <div className="mb-8">
-        <ProfileCard
-          profile={profile}
-          setProfile={setProfile}
-        />
-      </div>
+      <div className="grid lg:grid-cols-3 gap-8">
 
-      {/* Account Information */}
-      <div className="mb-8">
-        <AccountInfo
-          profile={profile}
-          setProfile={setProfile}
-        />
-      </div>
+        {/* Left Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
 
-      {/* Change Password */}
-      <div className="mb-8">
-        <ChangePassword />
-      </div>
+          <div className="w-28 h-28 rounded-full bg-orange-500 mx-auto flex items-center justify-center text-4xl font-bold text-white">
+            G
+          </div>
 
-      {/* Save Button */}
-      <SaveProfileButton
-        onSave={handleSave}
-      />
+          <h2 className="text-2xl font-bold mt-5">
+            Gaurav Satpute
+          </h2>
+
+          <p className="text-gray-500">
+            gauravsatpute.cse23@sbjit.edu.in
+          </p>
+
+          <span className="inline-block mt-5 bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm">
+            Software Engineer
+          </span>
+
+        </div>
+
+        {/* Right Section */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
+
+          <h2 className="text-2xl font-bold mb-6">
+            Profile Information
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Full Name
+              </label>
+
+              <input
+                className="w-full border rounded-xl px-4 py-3"
+                value="Gaurav Satpute"
+                readOnly
+              />
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Email
+              </label>
+
+              <input
+                className="w-full border rounded-xl px-4 py-3"
+                value="gauravsatpute.cse23@sbjit.edu.in"
+                readOnly
+              />
+            </div>
+
+          </div>
+
+          <button
+            className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl"
+          >
+            Edit Profile
+          </button>
+
+        </div>
+
+      </div>
     </DashboardLayout>
   );
 }

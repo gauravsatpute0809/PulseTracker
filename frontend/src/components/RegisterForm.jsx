@@ -35,7 +35,7 @@ function RegisterForm() {
     try {
       setLoading(true);
 
-      const response = await api.post("/register", {
+      const response = await api.post("/auth/register", ...{
         full_name: formData.full_name,
         email: formData.email,
         password: formData.password,

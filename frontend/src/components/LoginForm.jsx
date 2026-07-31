@@ -31,7 +31,8 @@ function LoginForm() {
     try {
       setLoading(true);
 
-      const response = await api.post("/login", {
+      // ✅ Updated Login API
+      const response = await api.post("/auth/login", {
         email: formData.email,
         password: formData.password,
       });
