@@ -1,7 +1,11 @@
-from flask import Blueprint, jsonify, send_file
+from flask import Blueprint, jsonify, send_file, request
 from sqlalchemy import func, extract
+from datetime import datetime
 import io
 import pandas as pd
+
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
 
 from app.extensions import db
 from app.models.order import Order
@@ -248,6 +252,85 @@ def export_excel():
         as_attachment=True,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    
+@report_bp.route("/reports/export/pdf", methods=["GET"])
+def export_pdf():
+
+    buffer = io.BytesIO()
+
+    pdf = SimpleDocTemplate(buffer)
+
+    data = [
+        ["Metric", "Value"],
+        ["Total Orders", Order.query.count()],
+        ["Total Customers", Customer.query.count()],
+        ["Total Products", Product.query.count()],
+        [
+            "Total Sales",
+            db.session.query(
+                func.coalesce(func.sum(Order.total_price), 0)
+            ).scalar()
+        ]
+    ]
+
+    table = Table(data)
+
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.orange),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+
+        ("BACKGROUND", (0,1), (-1,-1), colors.beige),
+
+        ("ALIGN", (0,0), (-1,-1), "CENTER")
+    ]))
+
+    pdf.build([table])
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        download_name="PulseMetrics_Report.pdf",
+        as_attachment=True,
+        mimetype="application/pdf"
+    )
+    
+# ==========================================
+# Filter Summary API
+# ==========================================
+@report_bp.route("/reports/filter-summary", methods=["GET"])
+def filter_summary():
+
+    start = request.args.get("start")
+    end = request.args.get("end")
+
+    query = Order.query
+
+    if start and end:
+        start_date = datetime.strptime(start, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end, "%Y-%m-%d").date()
+
+        query = query.filter(
+            Order.order_date.between(start_date, end_date)
+        )
+
+    total_orders = query.count()
+
+    total_sales = (
+        query.with_entities(
+            func.coalesce(func.sum(Order.total_price), 0)
+        ).scalar()
+    )
+
+    return {
+        "success": True,
+        "data": {
+            "orders": total_orders,
+            "sales": float(total_sales or 0),
+        },
+    }, 200
     
 @report_bp.route("/reports/dashboard-summary", methods=["GET"])
 def dashboard_summary():
