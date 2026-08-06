@@ -1,5 +1,4 @@
 import Sidebar from "../components/Sidebar";
-import TopNavbar from "../components/TopNavbar";
 import DashboardNavbar from "../components/DashboardNavbar";
 
 function DashboardLayout({ children }) {
@@ -10,12 +9,12 @@ function DashboardLayout({ children }) {
 
       <div className="flex-1 bg-slate-100 min-h-screen">
 
-        <DashboardNavbar /> 
+        {/* Top Navigation */}
+        <DashboardNavbar />
 
+        {/* Main Content */}
         <main className="p-8">
-
           {children}
-
         </main>
 
       </div>

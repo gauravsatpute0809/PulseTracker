@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import func
+from app.notification_helper import create_notification
 
 from app.extensions import db
 from app.models.customer import Customer
@@ -46,12 +47,18 @@ def add_customer():
     db.session.add(customer)
     db.session.commit()
 
-    return jsonify({
-        "success": True,
-        "message": "Customer added successfully.",
-        "customer": customer.to_dict()
-    }), 201
+# Create Notification
+    create_notification(
+    "New Customer",
+    f"{customer.full_name} has been added successfully."
+)
+   
 
+    return jsonify({
+    "success": True,
+    "message": "Customer added successfully.",
+    "customer": customer.to_dict()
+}), 201
 
 # ==========================================
 # Get Customers (Pagination + Sorting)

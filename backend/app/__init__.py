@@ -9,6 +9,7 @@ from app.extensions import db, migrate, bcrypt, jwt
 from app.models.user import User
 from app.models.product import Product
 from app.models.setting import Setting
+from app.models.notification import Notification
 
 # Blueprints
 from app.routes.auth import auth_bp
@@ -19,6 +20,7 @@ from app.routes.order_routes import order_bp
 from app.routes.report_routes import report_bp
 from app.routes.settings_routes import settings_bp
 from app.routes.dashboard_routes import dashboard_bp
+from app.routes.notification_routes import notification_bp
 
 def create_app():
     app = Flask(__name__)
@@ -46,6 +48,8 @@ def create_app():
     app.register_blueprint(report_bp, url_prefix="/api")
     app.register_blueprint(settings_bp, url_prefix="/api")
     app.register_blueprint(dashboard_bp, url_prefix="/api")
+    app.register_blueprint(notification_bp, url_prefix="/api")
+    
     @app.route("/")
     def home():
         return {

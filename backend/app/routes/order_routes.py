@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import func
+from app.notification_helper import create_notification
 
 from app.extensions import db
 from app.models.order import Order
@@ -46,12 +47,18 @@ def add_order():
     db.session.add(order)
     db.session.commit()
 
-    return jsonify({
-        "success": True,
-        "message": "Order added successfully.",
-        "order": order.to_dict()
-    }), 201
+# Create Notification
+    create_notification(
+    "New Order",
+    f"{order.customer_name} placed an order for {order.product_name}."
+  )
+    
 
+    return jsonify({
+    "success": True,
+    "message": "Order added successfully.",
+    "order": order.to_dict()
+   }), 201
 
 # ==========================================
 # Get Orders

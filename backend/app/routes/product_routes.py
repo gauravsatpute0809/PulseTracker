@@ -3,6 +3,7 @@ from sqlalchemy import func
 
 from app.extensions import db
 from app.models.product import Product
+from app.notification_helper import create_notification
 
 from openpyxl import load_workbook
 from werkzeug.utils import secure_filename
@@ -43,11 +44,18 @@ def add_product():
     db.session.add(product)
     db.session.commit()
 
+# Create Notification
+    create_notification(
+        
+        "New Product Added",
+        f"{product.name} has been added successfully."
+    )
+
     return jsonify({
-        "success": True,
-        "message": "Product added successfully.",
-        "product": product.to_dict()
-    }), 201
+    "success": True,
+    "message": "Product added successfully.",
+    "product": product.to_dict()
+}), 201
 
 
 # ==========================================
